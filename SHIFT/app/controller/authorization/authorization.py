@@ -32,4 +32,3 @@ async def check_token(database: DatabaseUserGateway, token: str) -> DecodeToken:
     if user is None:
         raise credentials_exception
     return DecodeToken(id=id_, username=username)
-

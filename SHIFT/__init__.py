@@ -24,8 +24,8 @@ def start_app():
 
         async with session_maker() as session:
             # Создаем двух тестовых пользователей
-            user1 = session.scalar(select(User.id).filter_by(username="user@example.com"))
-            user2 = session.scalar(select(User.id).filter_by(username="user2@example.com"))
+            user1 = await session.scalar(select(User.id).filter_by(username="user@example.com"))
+            user2 = await session.scalar(select(User.id).filter_by(username="user2@example.com"))
             if user1 is None and user2 is None:
                 session.add_all(
                     [
@@ -36,7 +36,12 @@ def start_app():
                         User(
                             username="user2@example.com",
                             hashed_password="$2b$12$nhEYfC7pRyS.KGZezH7htO5XAj1pg8k/sgJGdYcY6boH2SH1nn4y2"
-                        ),
+                        )
+                    ]
+                )
+                await session.commit()
+                session.add_all(
+                    [
                         SalaryDetails(
                             id=1,
                             salary=20000.00,
@@ -50,7 +55,6 @@ def start_app():
                     ]
                 )
                 await session.commit()
-
 
     app.dependency_overrides[AsyncSession] = partial(get_db, session_maker)
     app.dependency_overrides[DatabaseUserGateway] = new_gateway
